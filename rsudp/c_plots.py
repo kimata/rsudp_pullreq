@@ -16,21 +16,32 @@ QtGui = False
 PhotoImage = False
 try:
     from matplotlib import use
-    try:
-        use('Qt5Agg')
-        from PyQt5 import QtGui
-        QT = True
-    except Exception as e:
-        printW('Qt import failed. Trying Tk...')
-        printW('detail: %s' % e, spaces=True)
+
+    if os.environ.get('DISPLAY') is None:
+        use('Agg')  # Headless environment
+    else:
         try:
-            use('TkAgg')
-            from tkinter import PhotoImage
+            use('Qt5Agg')
+            from PyQt5 import QtGui
+
+            QT = True
         except Exception as e:
-            printE('Could not import either Qt or Tk, and the plot module requires at least one of them to run.', sender)
-            printE('Please make sure either PyQt5 or Tkinter is installed.', sender, spaces=True)
-            printE('detail: %s'% e, sender, spaces=True)
-            raise ImportError('Could not import either Qt or Tk, and the plot module requires at least one of them to run')
+            printW('Qt import failed. Trying Tk...')
+            printW('detail: %s' % e, spaces=True)
+            try:
+                use('TkAgg')
+                from tkinter import PhotoImage
+            except Exception as e:
+                printE(
+                    'Could not import either Qt or Tk, and the plot module requires at least one of them to run.',
+                    sender,
+                )
+                printE('Please make sure either PyQt5 or Tkinter is installed.', sender, spaces=True)
+                printE('detail: %s' % e, sender, spaces=True)
+                raise ImportError(
+                    'Could not import either Qt or Tk, and the plot module requires at least one of them to run'
+                )
+
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
     import matplotlib.image as mpimg
