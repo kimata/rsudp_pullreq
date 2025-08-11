@@ -564,6 +564,8 @@ class Plot(AbcPlot):
         '''
         Set RS plot icons.
         '''
+        if os.environ.get('DISPLAY') is None:
+            return
         mgr = plt.get_current_fig_manager()
         ico = pr.resource_filename('rsudp', os.path.join('img', ICON))
         if QT:
